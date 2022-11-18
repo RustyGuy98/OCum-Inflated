@@ -15,6 +15,10 @@ int setSquirtChance
 int setClearInflation
 int setResetDefaults
 int setDisableFacialsForElins
+int setDecoupleLevelSystem
+int setMaxCum
+int setMaxBellySize
+int _levelSystemFlags
 
 OCumScript property OCum auto
 
@@ -57,6 +61,18 @@ event OnPageReset(string page)
 	setCumCleanupTimer = AddSliderOption("$ocum_option_cum_cleanup_timer", OCum.cumCleanupTimer, "{1}")
 	setInflationCleanupTimer = AddSliderOption("$ocum_option_inflation_cleanup_timer", OCum.inflationCleanupTimer, "{1}")
 	AddEmptyOption()
+	
+	AddColoredHeader("$ocum_header_ocum_inflated")
+	setDecoupleLevelSystem = AddToggleOption("$ocum_option_decouple_level_system", OCum.DecoupleLevelSystem)
+	if OCum.DecoupleLevelSystem
+		_levelSystemFlags = OPTION_FLAG_NONE
+	else
+		_levelSystemFlags = OPTION_FLAG_DISABLED
+	endIf
+	
+	setMaxCum = AddSliderOption("$ocum_option_max_cum", OCum.MaxCum, "{0}", _levelSystemFlags)
+	setMaxBellySize = AddSliderOption("$ocum_option_max_belly_size", OCum.MaxBellySize, "{0}%")
+	AddEmptyOption()
 endEvent
 
 
@@ -88,6 +104,10 @@ event OnOptionSelect(int option)
 	elseif (option == setResetDefaults)
 		ResetDefaults()
 		ShowMessage("$ocum_message_defaults_reset", false)
+	elseif (option == setDecoupleLevelSystem)
+		OCum.DecoupleLevelSystem = !OCum.DecoupleLevelSystem
+		SetToggleOptionValue(setDecoupleLevelSystem, OCum.DecoupleLevelSystem)
+		ForcePageReset()
 	endIf
 endEvent
 
@@ -120,7 +140,7 @@ event OnOptionSliderOpen(int option)
 	If (option == setCumRegenSpeed)
 		SetSliderDialogStartValue(OCum.cumRegenSpeed)
 		SetSliderDialogDefaultValue(1.0)
-		SetSliderDialogRange(0.1, 2)
+		SetSliderDialogRange(0.1, 10)
 		SetSliderDialogInterval(0.1)
 	elseif (option == setSquirtChance)
 		SetSliderDialogStartValue(OCum.squirtChance)
@@ -137,6 +157,16 @@ event OnOptionSliderOpen(int option)
 		SetSliderDialogDefaultValue(5.0)
 		SetSliderDialogRange(0.5, 60)
 		SetSliderDialogInterval(0.5)
+	elseif (option == setMaxCum)
+		SetSliderDialogStartValue(OCum.MaxCum)
+		SetSliderDialogDefaultValue(50.0)
+		SetSliderDialogRange(1, 150)
+		SetSliderDialogInterval(1)
+	elseif (option == setMaxBellySize)
+		SetSliderDialogStartValue(OCum.MaxBellySize)
+		SetSliderDialogDefaultValue(60.0)
+		SetSliderDialogRange(1, 100)
+		SetSliderDialogInterval(1)
 	EndIf
 endEvent
 
@@ -156,6 +186,12 @@ event OnOptionSliderAccept(int option, float value)
 		OCum.inflationCleanupTimer = value
 		OCum.OCumInflationSpell.SetNthEffectDuration(0, (value * 60) as int)
 		SetSliderOptionValue(setInflationCleanupTimer, value, "{1}")
+	elseif (option == setMaxCum)
+		OCum.MaxCum = value
+		SetSliderOptionValue(setMaxCum, value, "{0}")
+	elseif (option == setMaxBellySize)
+		OCum.MaxBellySize = value
+		SetSliderOptionValue(setMaxBellySize, value, "{0}%")
 	EndIf
 endEvent
 
@@ -187,6 +223,12 @@ event OnOptionHighlight(int option)
 		SetInfoText("$ocum_highlight_clean_cum_decals")
 	elseif (option == setClearInflation)
 		SetInfoText("$ocum_highlight_clear_inflation")
+	elseif (option == setDecoupleLevelSystem)
+		SetInfoText("$ocum_highlight_decouple_level_system")
+	elseif (option == setMaxCum)
+		SetInfoText("$ocum_highlight_max_cum")
+	elseif (option == setMaxBellySize)
+		SetInfoText("$ocum_highlight_max_belly_size")
 	endif
 endEvent
 
@@ -245,4 +287,13 @@ function ResetDefaults()
 	OCum.inflationCleanupTimer = 5
 	OCum.OCumInflationSpell.SetNthEffectDuration(0, 5 * 60)
 	SetSliderOptionValue(setInflationCleanupTimer, 5.0, "{1}")
+	
+	OCum.DecoupleLevelSystem = false
+	SetToggleOptionValue(setDecoupleLevelSystem, OCum.DecoupleLevelSystem)
+	
+	OCum.MaxCum = 50
+	SetSliderOptionValue(setMaxCum, 50.0, "{0}")
+	
+	OCum.MaxBellySize = 60
+	SetSliderOptionValue(setMaxBellySize, 60.0, "{0}%")
 endFunction

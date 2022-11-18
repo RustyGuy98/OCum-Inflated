@@ -74,6 +74,10 @@ bool property cleanCumEnterWater auto
 bool property isRemovingCumFromAllActors auto
 bool property isRemovingInflationFromAllActors auto
 
+bool property DecoupleLevelSystem auto
+float property MaxCum auto
+float property MaxBellySize auto
+
 
 ;  ██████╗  ██████╗██╗   ██╗███╗   ███╗
 ; ██╔═══██╗██╔════╝██║   ██║████╗ ████║
@@ -160,9 +164,9 @@ Function AdjustStoredCumAmount(actor npc, float amount)
 			set = current + amount
 			float ratio = set / max
 			ratio -= 1
-			float inflation = ratio * 0.6
-			if inflation > 0.6
-				inflation = 0.6
+			float inflation = ratio * (MaxBellySize / 100)
+			if inflation > MaxBellySize / 100
+				inflation = MaxBellySize / 100
 			EndIf
 			if !disableInflation
 				SetBellyScale(npc, inflation)
@@ -923,7 +927,11 @@ float Function GetMaxCumStoragePossible(actor npc)
 			return max
 		EndIf
 	else
+		if !DecoupleLevelSystem
 			return 2 * ( (npc.GetLevel() * 0.5) + 1)
+		else
+			return MaxCum
+		endif
 	endif
 EndFunction
 
@@ -1038,9 +1046,29 @@ EndFunction
 ; ------------------------ Body skeleton utility functions ------------------------  ;
 
 Function SetBellyScale(actor akActor, float bellyScale)
-	NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", bellyScale)
-	NiOverride.UpdateModelWeight(akActor)
+	bellyScale = bellyScale / 3
 
+	float i = 0
+	float x = 0
+	float y = 0
+	float currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
+	if currentBellyScale < bellyScale
+		while y < 3
+			i = 0
+			x = 0
+			currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
+			while i < bellyScale
+				i += 0.01
+				x = i + currentBellyScale
+				Utility.Wait(0.01)
+				NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", x)
+				NiOverride.UpdateModelWeight(akActor)
+			endWhile
+			y += 1
+			Utility.Wait(0.3)
+		endWhile
+	endif
+	
 	if PapyrusUtil.CountActor(currentSceneBellyInflationActs, akActor) == 0
 		currentSceneBellyInflationActs = PapyrusUtil.PushActor(currentSceneBellyInflationActs, akActor)
 	endif
