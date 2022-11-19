@@ -1046,27 +1046,62 @@ EndFunction
 ; ------------------------ Body skeleton utility functions ------------------------  ;
 
 Function SetBellyScale(actor akActor, float bellyScale)
-	bellyScale = bellyScale / 3
-
-	float i = 0
-	float x = 0
-	float y = 0
-	float currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
-	if currentBellyScale < bellyScale
-		while y < 3
-			i = 0
-			x = 0
-			currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
-			while i < bellyScale
-				i += 0.01
-				x = i + currentBellyScale
-				Utility.Wait(0.01)
-				NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", x)
-				NiOverride.UpdateModelWeight(akActor)
+	if NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum") > 0.0 || bellyScale < (MaxBellySize / 100)
+		float i = 0
+		float x = 0
+		float y = 0
+		float currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
+		if currentBellyScale < bellyScale
+			bellyScale = bellyScale / 3
+			while y < 3
+				i = 0
+				x = 0
+				currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
+				
+				ostim.PlaySound(akActor, cumsound)
+				while i < bellyScale
+					i += 0.01
+					x = i + currentBellyScale
+					Utility.Wait(0.01)
+					NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", x)
+					NiOverride.UpdateModelWeight(akActor)
+				endWhile
+				y += 1
+				Utility.Wait(0.5)
 			endWhile
-			y += 1
-			Utility.Wait(0.3)
-		endWhile
+		endif
+	else ; If the belly is empty and the requested belly size is max then this will make the animation look much better.
+		float i = 0
+		float x = 0
+		float y = 0
+		float currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
+		if currentBellyScale < bellyScale
+			bellyScale = bellyScale / 8
+			while y < 3
+				i = 0
+				x = 0
+				currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
+				
+				if y == 0
+					bellyScale = bellyScale * 4
+				elseif y == 1
+					bellyScale = (bellyScale / 4) * 2
+				; elseif y == 2
+				; 	bellyScale = bellyScale
+				endif
+				
+				ostim.PlaySound(akActor, cumsound)
+				while i < bellyScale
+					i += 0.01
+					x = i + currentBellyScale
+					Utility.Wait(0.01)
+					NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", x)
+					NiOverride.UpdateModelWeight(akActor)
+				endWhile
+				y += 1
+				Utility.Wait(0.5)
+			endWhile
+		endif
 	endif
 	
 	if PapyrusUtil.CountActor(currentSceneBellyInflationActs, akActor) == 0
