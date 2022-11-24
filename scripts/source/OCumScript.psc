@@ -98,8 +98,6 @@ bool property enableFixedUterineVolumePlayer auto
 bool property isRemovingCumFromAllActors auto
 bool property isRemovingInflationFromAllActors auto
 
-bool property DecoupleLevelSystem auto
-float property MaxCum auto
 float property MaxBellySize auto
 
 
