@@ -152,10 +152,6 @@ event OnOptionSelect(int option)
 	elseif (option == setResetDefaults)
 		ResetDefaults()
 		ShowMessage("$ocum_message_defaults_reset", false)
-	elseif (option == setDecoupleLevelSystem)
-		OCum.DecoupleLevelSystem = !OCum.DecoupleLevelSystem
-		SetToggleOptionValue(setDecoupleLevelSystem, OCum.DecoupleLevelSystem)
-		ForcePageReset()
 	endIf
 endEvent
 
