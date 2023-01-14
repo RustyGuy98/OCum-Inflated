@@ -26,6 +26,9 @@ int setEnableFixedUterineVolumeNPCs
 int setEnableFixedUterineVolumePlayer
 int setUterineVolumeNPCs
 int setUterineVolumePlayer
+int setBodyMorph
+int setCumSpurts
+int setAlwaysFillToMax
 
 bool enableHigherCumRegenSpeed
 
@@ -38,67 +41,81 @@ event OnInit()
 	Modname = "OCum Ascended"
 endEvent
 
+event OnConfigInit()
+	Pages = new string[2]
+	Pages[0] = "General Settings"
+	Pages[1] = "Inflation Settings"
+endEvent
 
 event OnGameReload()
 	parent.onGameReload()
 endevent
 
-
 event OnPageReset(string page)
-	SetCursorFillMode(TOP_TO_BOTTOM)
+	if (page == "General Settings") || (page == "")
+		SetCursorFillMode(TOP_TO_BOTTOM)
 
-	AddColoredHeader("$ocum_header_main_settings")
-	setDisableCumShot = AddToggleOption("$ocum_option_disable_cum_shots", OCum.disableCumshot)
-	setDisableCumDecals = AddToggleOption("$ocum_option_disable_cum_decals", OCum.disableCumDecal)
-	setDisableCumMeshes = AddToggleOption("$ocum_option_disable_cum_meshes", OCum.disableCumMeshes)
-	setDisableInflation = AddToggleOption("$ocum_option_disable_cum_inflation", OCum.disableInflation)
-	setDisableFacialsForElins = AddToggleOption("$ocum_option_disable_facials_elins", OCum.disableFacialsForElins)
-	setCleanCumEnterWater = AddToggleOption("$ocum_option_clean_water_enter", OCum.cleanCumEnterWater)
-	setRealisticCumMode = AddToggleOption("$ocum_option_realistic_cum_mode", OCum.realisticCumMode)
-	setCumBarKey = AddKeyMapOption("$ocum_option_cum_bar_key", OCum.checkCumKey)
-	AddEmptyOption()
+		AddHeaderOption("<font color='#ff3389'>$ocum_header_main_settings")
+		setDisableCumShot = AddToggleOption("$ocum_option_disable_cum_shots", OCum.disableCumshot)
+		setDisableCumDecals = AddToggleOption("$ocum_option_disable_cum_decals", OCum.disableCumDecal)
+		setDisableCumMeshes = AddToggleOption("$ocum_option_disable_cum_meshes", OCum.disableCumMeshes)
+		setDisableInflation = AddToggleOption("$ocum_option_disable_cum_inflation", OCum.disableInflation)
+		setDisableFacialsForElins = AddToggleOption("$ocum_option_disable_facials_elins", OCum.disableFacialsForElins)
+		setCleanCumEnterWater = AddToggleOption("$ocum_option_clean_water_enter", OCum.cleanCumEnterWater)
+		setRealisticCumMode = AddToggleOption("$ocum_option_realistic_cum_mode", OCum.realisticCumMode)
+		setCumBarKey = AddKeyMapOption("$ocum_option_cum_bar_key", OCum.checkCumKey)
+		AddEmptyOption()
 
-	AddColoredHeader("$ocum_header_reset")
-	setCleanCumDecals = AddToggleOption("$ocum_option_clean_cum_decals", false)
-	setClearInflation = AddToggleOption("$ocum_option_clear_inflation", false)
-	setResetDefaults = AddToggleOption("$ocum_option_reset_defaults", false)
+		AddHeaderOption("<font color='#6699ff'>$ocum_header_reset")
+		setCleanCumDecals = AddToggleOption("$ocum_option_clean_cum_decals", false)
+		setClearInflation = AddToggleOption("$ocum_option_clear_inflation", false)
+		setResetDefaults = AddToggleOption("$ocum_option_reset_defaults", false)
 
-	SetCursorPosition(1)
+		SetCursorPosition(1)
 
-	AddColoredHeader("$ocum_header_adjustments")
-	setSquirtChance = AddSliderOption("$ocum_option_squirt_chance", OCum.squirtChance, "{0}")
-	setCumCleanupTimer = AddSliderOption("$ocum_option_cum_cleanup_timer", OCum.cumCleanupTimer, "{1}")
-	setInflationCleanupTimer = AddSliderOption("$ocum_option_inflation_cleanup_timer", OCum.inflationCleanupTimer, "{1}")
-	AddEmptyOption()
-	
-	setEnableHigherCumRegenSpeed = AddToggleOption("$ocum_option_enable_higher_cum_regen_speed", enableHigherCumRegenSpeed)
-	setCumRegenSpeed = AddSliderOption("$ocum_option_cum_regen_speed", OCum.cumRegenSpeed, "{1}")
+		AddHeaderOption("<font color='#ff3389'>$ocum_header_adjustments")
+		setSquirtChance = AddSliderOption("$ocum_option_squirt_chance", OCum.squirtChance, "{0}")
+		setCumCleanupTimer = AddSliderOption("$ocum_option_cum_cleanup_timer", OCum.cumCleanupTimer, "{1}")
+		setInflationCleanupTimer = AddSliderOption("$ocum_option_inflation_cleanup_timer", OCum.inflationCleanupTimer, "{1}")
+		AddEmptyOption()
+		
+		setEnableHigherCumRegenSpeed = AddToggleOption("$ocum_option_enable_higher_cum_regen_speed", enableHigherCumRegenSpeed)
+		setCumRegenSpeed = AddSliderOption("$ocum_option_cum_regen_speed", OCum.cumRegenSpeed, "{1}")
 
-	AddEmptyOption()
+		AddEmptyOption()
 
-	setEnableDeleveledCumBarNPCs = AddToggleOption("$ocum_option_enable_deleveled_cum_bar_npcs", OCum.enableDeleveledCumBarNPCs)
-	setCumBarMaxAmountNPCs = AddSliderOption("$ocum_option_cum_bar_max_amount_npcs", OCum.cumBarMaxAmountNPCs, "{0}")
+		setEnableDeleveledCumBarNPCs = AddToggleOption("$ocum_option_enable_deleveled_cum_bar_npcs", OCum.enableDeleveledCumBarNPCs)
+		setCumBarMaxAmountNPCs = AddSliderOption("$ocum_option_cum_bar_max_amount_npcs", OCum.cumBarMaxAmountNPCs, "{0}")
 
-	AddEmptyOption()
+		AddEmptyOption()
 
-	setEnableDeleveledCumBarPlayer = AddToggleOption("$ocum_option_enable_deleveled_cum_bar_player", OCum.enableDeleveledCumBarPlayer)
-	setCumBarMaxAmountPlayer = AddSliderOption("$ocum_option_cum_bar_max_amount_player", OCum.cumBarMaxAmountPlayer, "{0}")
+		setEnableDeleveledCumBarPlayer = AddToggleOption("$ocum_option_enable_deleveled_cum_bar_player", OCum.enableDeleveledCumBarPlayer)
+		setCumBarMaxAmountPlayer = AddSliderOption("$ocum_option_cum_bar_max_amount_player", OCum.cumBarMaxAmountPlayer, "{0}")
 
-	AddEmptyOption()
+		AddEmptyOption()
 
-	setEnableFixedUterineVolumeNPCs = AddToggleOption("$ocum_option_enable_fixed_uterine_volume_npcs", OCum.enableFixedUterineVolumeNPCs)
-	setUterineVolumeNPCs = AddSliderOption("$ocum_option_uterine_volume_npcs", OCum.uterineVolumeNPCs, "{0}")
+		setEnableFixedUterineVolumeNPCs = AddToggleOption("$ocum_option_enable_fixed_uterine_volume_npcs", OCum.enableFixedUterineVolumeNPCs)
+		setUterineVolumeNPCs = AddSliderOption("$ocum_option_uterine_volume_npcs", OCum.uterineVolumeNPCs, "{0}")
 
-	AddEmptyOption()
+		AddEmptyOption()
 
-	setEnableFixedUterineVolumePlayer = AddToggleOption("$ocum_option_enable_fixed_uterine_volume_player", OCum.enableFixedUterineVolumePlayer)
-	setUterineVolumePlayer = AddSliderOption("$ocum_option_uterine_volume_player", OCum.uterineVolumePlayer, "{0}")
+		setEnableFixedUterineVolumePlayer = AddToggleOption("$ocum_option_enable_fixed_uterine_volume_player", OCum.enableFixedUterineVolumePlayer)
+		setUterineVolumePlayer = AddSliderOption("$ocum_option_uterine_volume_player", OCum.uterineVolumePlayer, "{0}")
 
-	AddEmptyOption()
+		AddEmptyOption()
 
-	AddColoredHeader("$ocum_header_ocum_inflated")
-	setMaxBellySize = AddSliderOption("$ocum_option_max_belly_size", OCum.MaxBellySize, "{0}%")
-	AddEmptyOption()
+		
+	elseIf (page == "Inflation Settings")
+		AddHeaderOption("<font color='#ff3389'>$ocum_header_ocum_inflated")
+		setBodyMorph = AddInputOption("$ocum_option_body_morph", OCum.BodyMorph)
+		AddEmptyOption()
+		setMaxBellySize = AddSliderOption("$ocum_option_max_belly_size", OCum.MaxBellySize, "{0}%")
+		AddEmptyOption()
+		setCumSpurts = AddSliderOption("$ocum_option_cum_spurts", OCum.CumSpurts, "{0}")
+		AddEmptyOption()
+		setAlwaysFillToMax = AddToggleOption("$ocum_option_always_fill_to_max", OCum.AlwaysFillToMax)
+		AddEmptyOption()
+	endIf
 endEvent
 
 
@@ -152,6 +169,9 @@ event OnOptionSelect(int option)
 	elseif (option == setResetDefaults)
 		ResetDefaults()
 		ShowMessage("$ocum_message_defaults_reset", false)
+	elseif (option == setAlwaysFillToMax)
+		OCum.AlwaysFillToMax = !OCum.AlwaysFillToMax
+		SetToggleOptionValue(setAlwaysFillToMax, OCum.AlwaysFillToMax)
 	endIf
 endEvent
 
@@ -231,7 +251,12 @@ event OnOptionSliderOpen(int option)
 	elseif (option == setMaxBellySize)
 		SetSliderDialogStartValue(OCum.MaxBellySize)
 		SetSliderDialogDefaultValue(60.0)
-		SetSliderDialogRange(1, 100)
+		SetSliderDialogRange(-500, 500)
+		SetSliderDialogInterval(1)
+	elseif (option == setCumSpurts)
+		SetSliderDialogStartValue(OCum.CumSpurts)
+		SetSliderDialogDefaultValue(3.0)
+		SetSliderDialogRange(1, 10)
 		SetSliderDialogInterval(1)
 	EndIf
 endEvent
@@ -267,9 +292,26 @@ event OnOptionSliderAccept(int option, float value)
 	elseif (option == setMaxBellySize)
 		OCum.MaxBellySize = value
 		SetSliderOptionValue(setMaxBellySize, value, "{0}%")
+	elseif (option == setCumSpurts)
+		OCum.CumSpurts = value
+		SetSliderOptionValue(setCumSpurts, value, "{0}")
 	EndIf
 endEvent
 
+event OnOptionInputOpen(int option)
+	if (option == setBodyMorph)
+		SetInputDialogStartText(OCum.BodyMorph)
+	endif
+endEvent
+
+event OnOptionInputAccept(int option, string userinput)
+	if (option == setBodyMorph)
+		OCum.RemoveBellyScaleFromAllActors() ; Prevents the other morphs from getting stuck. REMOVE THIS WHEN ADDING SUPPORT FOR MULTIPLE SIMULTANEOUS MORPHS.
+
+		OCum.BodyMorph = userinput
+		SetInputOptionValue(setBodyMorph, OCum.BodyMorph)
+	endif
+endEvent
 
 event OnOptionHighlight(int option)
 	if (option == setCleanCumEnterWater)
@@ -320,27 +362,33 @@ event OnOptionHighlight(int option)
 		SetInfoText("$ocum_highlight_uterine_volume_player")
 	elseif (option == setMaxBellySize)
 		SetInfoText("$ocum_highlight_max_belly_size")
+	elseif (option == setBodyMorph)
+		SetInfoText("$ocum_highlight_body_morph")
+	elseif (option == setCumSpurts)
+		SetInfoText("$ocum_highlight_cum_spurts")
+	elseif (option == setAlwaysFillToMax)
+		SetInfoText("$ocum_highlight_always_fill_to_max")
 	endif
 endEvent
 
 
 ; Shamelessly copied from OStim's OSexIntegrationMCM.psc
-bool Color1
-function AddColoredHeader(String In)
-	string Blue = "#6699ff"
-	string Pink = "#ff3389"
-	string Color
-
-	If Color1
-		Color = Pink
-		Color1 = False
-	Else
-		Color = Blue
-		Color1 = True
-	EndIf
-
-	AddHeaderOption("<font color='" + Color +"'>" + In)
-endFunction
+; bool Color1
+; function AddColoredHeader(String In)
+; 	string Blue = "#6699ff"
+; 	string Pink = "#ff3389"
+; 	string Color
+; 
+; 	If Color1
+; 		Color = Pink
+; 		Color1 = False
+; 	Else
+; 		Color = Blue
+; 		Color1 = True
+; 	EndIf
+; 
+; 	AddHeaderOption("<font color='" + Color +"'>" + In)
+; endFunction
 
 
 function ResetDefaults()
@@ -411,4 +459,13 @@ function ResetDefaults()
 	
 	OCum.MaxBellySize = 60
 	SetSliderOptionValue(setMaxBellySize, 60.0, "{0}%")
+
+	OCum.BodyMorph = "PregnancyBelly"
+	SetInputOptionValue(setBodyMorph, OCum.BodyMorph)
+
+	OCum.CumSpurts = 3
+	SetSliderOptionValue(setCumSpurts, 3.0, "{0}")
+
+	OCum.AlwaysFillToMax = false
+	SetToggleOptionValue(setAlwaysFillToMax, OCum.AlwaysFillToMax)
 endFunction

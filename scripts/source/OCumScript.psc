@@ -99,6 +99,9 @@ bool property isRemovingCumFromAllActors auto
 bool property isRemovingInflationFromAllActors auto
 
 float property MaxBellySize auto
+string property BodyMorph auto
+float property CumSpurts auto
+bool property AlwaysFillToMax auto
 
 
 ;  ██████╗  ██████╗██╗   ██╗███╗   ███╗
@@ -182,7 +185,7 @@ Function AdjustStoredCumAmount(actor npc, float amount, bool isFemalePartner)
 	float current = GetCumStoredAmount(npc)
 	float max = GetMaxCumStoragePossible(npc)
 
-	if (current + amount) > max
+	if ((current + amount) > max) || AlwaysFillToMax == true
 		if ostim.IsFemale(npc)
 			set = current + amount
 			float ratio = set / max
@@ -1190,62 +1193,30 @@ EndFunction
 ; ------------------------ Body skeleton utility functions ------------------------  ;
 
 Function SetBellyScale(actor akActor, float bellyScale)
-	if NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum") > 0.0 || bellyScale < (MaxBellySize / 100)
-		float i = 0
-		float x = 0
-		float y = 0
-		float currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
-		if currentBellyScale < bellyScale
-			bellyScale = bellyScale / 3
-			while y < 3
-				i = 0
-				x = 0
-				currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
-				
-				ostim.PlaySound(akActor, cumsound)
-				while i < bellyScale
-					i += 0.01
-					x = i + currentBellyScale
-					Utility.Wait(0.01)
-					NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", x)
-					NiOverride.UpdateModelWeight(akActor)
-				endWhile
-				y += 1
-				Utility.Wait(0.5)
-			endWhile
+	float i = 0
+	float x = 0
+	float y = 0
+	float currentBellyScale = NiOverride.GetBodyMorph(akActor, BodyMorph, "OCum")
+	if (currentBellyScale < bellyScale) || AlwaysFillToMax == true
+		bellyScale = bellyScale / CumSpurts
+		if AlwaysFillToMax == true
+			bellyScale = ((MaxBellySize / 100) - currentBellyScale) / CumSpurts
 		endif
-	else ; If the belly is empty and the requested belly size is max then this will make the animation look much better.
-		float i = 0
-		float x = 0
-		float y = 0
-		float currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
-		if currentBellyScale < bellyScale
-			bellyScale = bellyScale / 8
-			while y < 3
-				i = 0
-				x = 0
-				currentBellyScale = NiOverride.GetBodyMorph(akActor, "PregnancyBelly", "OCum")
-				
-				if y == 0
-					bellyScale = bellyScale * 4
-				elseif y == 1
-					bellyScale = (bellyScale / 4) * 2
-				; elseif y == 2
-				; 	bellyScale = bellyScale
-				endif
-				
-				ostim.PlaySound(akActor, cumsound)
-				while i < bellyScale
-					i += 0.01
-					x = i + currentBellyScale
-					Utility.Wait(0.01)
-					NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", x)
-					NiOverride.UpdateModelWeight(akActor)
-				endWhile
-				y += 1
-				Utility.Wait(0.5)
+		while y < CumSpurts
+			i = 0
+			x = 0
+			currentBellyScale = NiOverride.GetBodyMorph(akActor, BodyMorph, "OCum")
+			ostim.PlaySound(akActor, cumsound)
+			while i < bellyScale
+				i += 0.01
+				x = i + currentBellyScale
+				Utility.Wait(0.01)
+				NiOverride.SetBodyMorph(akActor, BodyMorph, "OCum", x)
+				NiOverride.UpdateModelWeight(akActor)
 			endWhile
-		endif
+			y += 1
+			Utility.Wait(0.5)
+		endWhile
 	endif
 	
 	if PapyrusUtil.CountActor(currentSceneBellyInflationActs, akActor) == 0
@@ -1259,8 +1230,8 @@ EndFunction
 
 
 Function RemoveBellyScale(actor akActor, bool removeActorFromInflationArrays)
-	NiOverride.SetBodyMorph(akActor, "PregnancyBelly", "OCum", 0.0)
-	NiOverride.ClearBodyMorph(akActor, "PregnancyBelly", "OCum")
+	NiOverride.SetBodyMorph(akActor, BodyMorph, "OCum", 0.0)
+	NiOverride.ClearBodyMorph(akActor, BodyMorph, "OCum")
 	NiOverride.UpdateModelWeight(akActor)
 
 	if removeActorFromInflationArrays
@@ -1291,6 +1262,8 @@ Function RemoveBellyScaleFromAllActors()
 
 		i += 1
 	endwhile
+
+	RemoveBellyScale(PlayerRef, false) ; Remove scales from the player no matter what just incase. Won't fix NPCs though.
 
 	bellyInflationActs = PapyrusUtil.ResizeActorArray(bellyInflationActs, 0)
 	currentSceneBellyInflationActs = PapyrusUtil.ResizeActorArray(currentSceneBellyInflationActs, 0)
