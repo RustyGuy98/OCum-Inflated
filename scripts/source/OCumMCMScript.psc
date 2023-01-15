@@ -41,21 +41,28 @@ event OnInit()
 	Modname = "OCum Ascended"
 endEvent
 
-event OnConfigInit()
-	Pages = new string[2]
-	Pages[0] = "General Settings"
-	Pages[1] = "Inflation Settings"
-endEvent
+; event OnConfigInit()
+; 	Pages = new string[2]
+; 	Pages[0] = "General Settings"
+; 	Pages[1] = "Inflation Settings"
+; endEvent
 
 event OnGameReload()
 	parent.onGameReload()
 endevent
 
 event OnPageReset(string page)
-	if (page == "General Settings") || (page == "")
+	
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption("<font color='#ff3389'>$ocum_header_main_settings")
+		AddHeaderOption("<font color='#ff3389'>$ocum_header_ocum_inflated")
+		setBodyMorph = AddInputOption("$ocum_option_body_morph", OCum.BodyMorph)
+		setMaxBellySize = AddSliderOption("$ocum_option_max_belly_size", OCum.MaxBellySize, "{0}%")
+		setCumSpurts = AddSliderOption("$ocum_option_cum_spurts", OCum.CumSpurts, "{0}")
+		setAlwaysFillToMax = AddToggleOption("$ocum_option_always_fill_to_max", OCum.AlwaysFillToMax)
+		AddEmptyOption()
+
+		AddHeaderOption("<font color='#6699ff'>$ocum_header_main_settings")
 		setDisableCumShot = AddToggleOption("$ocum_option_disable_cum_shots", OCum.disableCumshot)
 		setDisableCumDecals = AddToggleOption("$ocum_option_disable_cum_decals", OCum.disableCumDecal)
 		setDisableCumMeshes = AddToggleOption("$ocum_option_disable_cum_meshes", OCum.disableCumMeshes)
@@ -66,7 +73,7 @@ event OnPageReset(string page)
 		setCumBarKey = AddKeyMapOption("$ocum_option_cum_bar_key", OCum.checkCumKey)
 		AddEmptyOption()
 
-		AddHeaderOption("<font color='#6699ff'>$ocum_header_reset")
+		AddHeaderOption("<font color='#ff3389'>$ocum_header_reset")
 		setCleanCumDecals = AddToggleOption("$ocum_option_clean_cum_decals", false)
 		setClearInflation = AddToggleOption("$ocum_option_clear_inflation", false)
 		setResetDefaults = AddToggleOption("$ocum_option_reset_defaults", false)
@@ -104,18 +111,9 @@ event OnPageReset(string page)
 
 		AddEmptyOption()
 
-		
-	elseIf (page == "Inflation Settings")
-		AddHeaderOption("<font color='#ff3389'>$ocum_header_ocum_inflated")
-		setBodyMorph = AddInputOption("$ocum_option_body_morph", OCum.BodyMorph)
-		AddEmptyOption()
-		setMaxBellySize = AddSliderOption("$ocum_option_max_belly_size", OCum.MaxBellySize, "{0}%")
-		AddEmptyOption()
-		setCumSpurts = AddSliderOption("$ocum_option_cum_spurts", OCum.CumSpurts, "{0}")
-		AddEmptyOption()
-		setAlwaysFillToMax = AddToggleOption("$ocum_option_always_fill_to_max", OCum.AlwaysFillToMax)
-		AddEmptyOption()
-	endIf
+	; if (page == "General Settings") || (page == "")
+	; elseIf (page == "Inflation Settings")
+	; endIf
 endEvent
 
 
